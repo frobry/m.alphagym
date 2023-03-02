@@ -169,13 +169,13 @@ header nav ul li a {
   width: 97.3%; 
   top: 90px;
   background-color: rgb(60, 60, 60);
-  margin-top: 70px;
+  margin-top: 50px;
 }
 
 .avis {
   position: fixed;
   background-color: rgb(255, 255, 255);
-  margin-top: 45px;
+  margin-top: 65px;
   border-radius: 30px;
   margin-right: -18px;
   padding: 6px;
