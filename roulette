@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Alpha 100% gagnante</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            border: 8px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+
+        .segment {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            transform-origin: 0 0;
+            clip-path: path('M 0 0 L 141.42 141.42 A 200 200 0 0 1 0 200 Z');
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .segment:nth-child(1) {
+            transform: rotate(0deg);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+
+        .segment:nth-child(2) {
+            transform: rotate(45deg);
+            background: linear-gradient(45deg, #333, #555);
+        }
+
+        .segment:nth-child(3) {
+            transform: rotate(90deg);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+
+        .segment:nth-child(4) {
+            transform: rotate(135deg);
+            background: linear-gradient(45deg, #333, #555);
+        }
+
+        .segment:nth-child(5) {
+            transform: rotate(180deg);
+            background: linear-gradient(45deg, #333, #555);
+        }
+
+        .segment:nth-child(6) {
+            transform: rotate(225deg);
+            background: linear-gradient(45deg, #333, #555);
+        }
+
+        .segment:nth-child(7) {
+            transform: rotate(270deg);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+
+        .segment:nth-child(8) {
+            transform: rotate(315deg);
+            background: linear-gradient(45deg, #00FF00, #32CD32);
+        }
+
+        .segment-text {
+            position: absolute;
+            top: 65%;
+            left: 2%;
+            width: 50%;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            line-height: 1.1;
+            transform: rotate(-22.5deg);
+        }
+
+        .pointer {
+            position: absolute;
+            bottom: 10px;
+            left: calc(55% + 100px);
+            transform: translateX(-50%) rotate(-25deg);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #FFD700;
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a1a;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .spin-button {
+            background: linear-gradient(45deg, #00FF00, #32CD32);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .spin-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.4);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .result-content {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .result-prize {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #FFD700;
+        }
+
+        .serial-number {
+            font-size: 1.5rem;
+            color: #00FF00;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #00FF00;
+        }
+
+        .close-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .replay-button {
+            background: linear-gradient(45deg, #00FF00, #32CD32);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .wheel-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .segment {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .segment-text {
+                font-size: 8px;
+            }
+            
+            .result-content {
+                margin: 20px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">Roulette Alpha 100% gagnante</h1>
+        <p class="subtitle">Invitez un(e) ami(e) pour réclamer l'offre</p>
+    </div>
+
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel">
+            <div class="segment">
+                <div class="segment-text">Bilan santé complet<br>(80€ offert)</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">Accès complet programme collectif</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">+10 points OU<br>+1 mois entier<br>offert</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">+5 points OU<br>+2 semaines offertes</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">50€ réduction<br>carte/abonnement</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">50€ offerts<br>à ton invité</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">30min coaching<br>personnalisé VIP</div>
+            </div>
+            <div class="segment">
+                <div class="segment-text">REJOUER<br>(spin gratuit)</div>
+            </div>
+        </div>
+        <div class="center-circle">ALPHA</div>
+    </div>
+
+    <button class="spin-button" id="spinButton">TOURNER</button>
+
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <h2 class="result-title">🎉 Félicitations ! 🎉</h2>
+            <div class="result-prize" id="resultPrize"></div>
+            <div class="serial-number" id="serialNumber"></div>
+            <button class="close-button" id="closeButton">Fermer</button>
+            <button class="replay-button" id="replayButton" style="display: none;">REJOUER</button>
+        </div>
+    </div>
+
+    <script>
+        const wheel = document.getElementById('wheel');
+        const spinButton = document.getElementById('spinButton');
+        const resultModal = document.getElementById('resultModal');
+        const resultPrize = document.getElementById('resultPrize');
+        const serialNumber = document.getElementById('serialNumber');
+        const closeButton = document.getElementById('closeButton');
+        const replayButton = document.getElementById('replayButton');
+
+        const prizes = [
+            "Bilan santé complet (80€ offert)",
+            "Accès complet à un programme collectif (pour soi ou à offrir)",
+            "+10 points sur ta carte OU +1 mois entier offert sur ton abonnement",
+            "+5 points sur ta carte OU +2 semaines offertes sur ton abonnement",
+            "50€ de réduction sur ta prochaine carte à points ou abonnement",
+            "50€ offerts à ton invité sur sa carte à points ou abonnement",
+            "30 minutes de coaching personnalisé VIP",
+            "REJOUER (spin gratuit)"
+        ];
+
+        const serialNumbers = [
+            "A7X4K2", "B9M3L8", "C5N7P1", "D2Q6R9", "E8T4S3", "F1U9V7", "G6W2Y5"
+        ];
+
+        let isSpinning = false;
+        let currentRotation = 0;
+
+        function generateSpin() {
+            const segmentAngle = 360 / 8;
+            const randomSegment = Math.floor(Math.random() * 8);
+            const randomAngleInSegment = Math.random() * segmentAngle;
+            const targetAngle = (randomSegment * segmentAngle) + randomAngleInSegment;
+            const spins = 5 + Math.random() * 5;
+            const totalRotation = (spins * 360) + targetAngle;
+            
+            return {
+                rotation: totalRotation,
+                targetAngle: targetAngle
+            };
+        }
+        
+        function getWinningSegment(finalAngle) {
+            // Normaliser l'angle entre 0 et 360
+            const normalizedAngle = ((finalAngle % 360) + 360) % 360;
+            
+            // La flèche pointe vers le haut (0°), donc on calcule quel segment est sous la flèche
+            // Les segments sont numérotés de 0 à 7, dans le sens horaire
+            const segmentAngle = 360 / 8;
+            
+            // Ajuster pour que le segment 0 soit bien aligné avec la flèche
+            const adjustedAngle = (360 - normalizedAngle + (segmentAngle / 2)) % 360;
+            const segmentIndex = Math.floor(adjustedAngle / segmentAngle);
+            
+            return segmentIndex;
+        }
+
+        function showResult(segmentIndex) {
+            const prize = prizes[segmentIndex];
+            resultPrize.textContent = prize;
+            
+            if (segmentIndex === 7) {
+                serialNumber.style.display = 'none';
+                replayButton.style.display = 'inline-block';
+                closeButton.style.display = 'none';
+            } else {
+                const serial = serialNumbers[segmentIndex === 7 ? 0 : segmentIndex];
+                serialNumber.textContent = `Numéro de série: ${serial}`;
+                serialNumber.style.display = 'block';
+                replayButton.style.display = 'none';
+                closeButton.style.display = 'inline-block';
+            }
+            
+            resultModal.style.display = 'flex';
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            spinButton.disabled = true;
+            spinButton.textContent = 'EN COURS...';
+            
+            const spinResult = generateSpin();
+            currentRotation += spinResult.rotation;
+            
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            
+            setTimeout(() => {
+                isSpinning = false;
+                spinButton.disabled = false;
+                spinButton.textContent = 'TOURNER';
+                
+                // Calculer le segment gagnant basé sur la position finale de la roue
+                const winningSegment = getWinningSegment(currentRotation);
+                showResult(winningSegment);
+            }, 4000);
+        }
+
+        function closeModal() {
+            resultModal.style.display = 'none';
+        }
+
+        function replay() {
+            closeModal();
+            setTimeout(spin, 500);
+        }
+
+        spinButton.addEventListener('click', spin);
+        closeButton.addEventListener('click', closeModal);
+        replayButton.addEventListener('click', replay);
+
+        resultModal.addEventListener('click', (e) => {
+            if (e.target === resultModal) {
+                closeModal();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9759ba6b221f2193',t:'MTc1NjI3ODQwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
